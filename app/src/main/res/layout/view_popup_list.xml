@@ -12,7 +12,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler"
-        android:background="@drawable/shape_white_cor3"
+        android:background="@drawable/rectangle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never"/>

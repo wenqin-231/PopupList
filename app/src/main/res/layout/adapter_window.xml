@@ -4,7 +4,7 @@
     android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:background="@drawable/click_white_to_gray"
+    android:background="@drawable/click_trans_to_gray"
     android:gravity="center_vertical"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
