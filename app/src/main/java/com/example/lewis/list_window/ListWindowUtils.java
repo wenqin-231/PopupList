@@ -13,6 +13,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
 import java.util.ArrayList;
@@ -20,10 +22,13 @@ import java.util.List;
 
 /**
  * Created by Lewis on 2017/9/11.
- * Description:
+ * Description: 菜单列表工具类
  */
 
 public class ListWindowUtils {
+
+	// 角标对其图标正下方的偏移量
+	private static final int OFFSET_X = 10;
 
 	private PopupWindow mPopupWindow;
 	private int mContentViewHeight;
@@ -32,6 +37,8 @@ public class ListWindowUtils {
 	private int[] mLocations = new int[2];
 	private boolean mIsOnDismissAnim = false;
 	private OnItemClickListener mOnItemClickListener;
+
+	private ImageView mArrowDown, mArrowUp;
 
 	public ListWindowUtils(final Activity activity) {
 		LayoutInflater inflater = LayoutInflater.from(activity);
@@ -72,6 +79,9 @@ public class ListWindowUtils {
 				if (mOnItemClickListener != null) mOnItemClickListener.onItemClick(position, adapter);
 			}
 		});
+
+		mArrowDown = contentView.findViewById(R.id.icon_popup_down);
+		mArrowUp = contentView.findViewById(R.id.icon_popup_up);
 	}
 
 	public static ListWindowUtils get(Activity activity) {
@@ -88,13 +98,19 @@ public class ListWindowUtils {
 			public void run() {
 				mContentViewHeight = mPopupWindow.getContentView().getMeasuredHeight();
 				if (mLocations[1] > mScreenHeight / 2) {
+					// show up of view
 //                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimTop);
 					mPopupWindow.update(view, 0, -(mContentViewHeight + view.getHeight()),
 							mPopupWindow.getWidth(), mPopupWindow.getHeight());
+
+					setupArrowIcon(true);
 				} else {
+					// show down of view
 //                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimBottom);
 					mPopupWindow.update(view, 0, 0, mPopupWindow.getWidth(),
 							mPopupWindow.getHeight());
+
+					setupArrowIcon(false);
 				}
 				AnimatorSet anim = showAnim(0.2f, 0.03f, 150);
 				anim.addListener(new AnimatorListenerAdapter() {
@@ -192,6 +208,24 @@ public class ListWindowUtils {
 
 	public boolean isShowing() {
 		return mPopupWindow != null && mPopupWindow.isShowing();
+	}
+
+	public void setupArrowIcon(boolean isDownArrow) {
+		if (!isDownArrow) {
+			mArrowUp.setVisibility(View.VISIBLE);
+			mArrowDown.setVisibility(View.GONE);
+			setupMargin(mArrowUp);
+		} else {
+			mArrowUp.setVisibility(View.GONE);
+			mArrowDown.setVisibility(View.VISIBLE);
+			setupMargin(mArrowDown);
+		}
+	}
+
+	private void setupMargin(ImageView arrowIcon) {
+		LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) arrowIcon.getLayoutParams();
+		lp.setMargins(mLocations[0] + lp.width / 2 - OFFSET_X, 0, 0 ,0);
+		arrowIcon.setLayoutParams(lp);
 	}
 
 	public interface OnItemClickListener{
