@@ -25,7 +25,7 @@ import java.util.List;
  * Description: 菜单列表工具类
  */
 
-public class ListWindowUtils {
+public class ListPopupWindow {
 
 	// 角标对其图标正下方的偏移量
 	private static final int OFFSET_X = 10;
@@ -40,7 +40,7 @@ public class ListWindowUtils {
 
 	private ImageView mArrowDown, mArrowUp;
 
-	public ListWindowUtils(final Activity activity) {
+	public ListPopupWindow(final Activity activity) {
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		mScreenHeight = activity.getResources().getDisplayMetrics().heightPixels;
 		final View contentView;
@@ -84,8 +84,8 @@ public class ListWindowUtils {
 		mArrowUp = contentView.findViewById(R.id.icon_popup_up);
 	}
 
-	public static ListWindowUtils get(Activity activity) {
-		return new ListWindowUtils(activity);
+	public static ListPopupWindow get(Activity activity) {
+		return new ListPopupWindow(activity);
 	}
 
 	public PopupWindow show(final View view) {

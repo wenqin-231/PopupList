@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener{
 
-    private ListWindowUtils mListWindowUtils;
+    private ListPopupWindow mListWindowUtils;
     private Toolbar mToolbar;
     private SearchView searchView;
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         MyAdapter myAdapter = new MyAdapter(this, initData());
         recyclerView.setAdapter(myAdapter);
-        mListWindowUtils = ListWindowUtils.get(MainActivity.this);
+        mListWindowUtils = ListPopupWindow.get(MainActivity.this);
 
         myAdapter.setOnImageViewClickListener(new MyAdapter.OnImageViewClickListener() {
             @Override
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         setSupportActionBar(mToolbar);
         mToolbar.setOnMenuItemClickListener(this);
 
-        mListWindowUtils.setOnItemClickListener(new ListWindowUtils.OnItemClickListener() {
+        mListWindowUtils.setOnItemClickListener(new ListPopupWindow.OnItemClickListener() {
             @Override
             public void onItemClick(int position, WindowAdapter adapter) {
                 Toast.makeText(MainActivity.this, "This is " + adapter.getData(position), Toast.LENGTH_SHORT).show();
