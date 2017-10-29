@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (mListWindowUtils != null && mListWindowUtils.isShowing()) {
+            // 点击空白处隐藏菜单列表，避免背景变亮，可是动画还没执行完毕的情况
             mListWindowUtils.dismissWithAnim();
             return true;
         }

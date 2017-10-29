@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,26 +26,27 @@ import java.util.List;
 
 public class ListPopupWindow {
 
-	// 角标对其图标正下方的偏移量
-	private static final int OFFSET_X = 10;
-
 	private PopupWindow mPopupWindow;
 	private int mContentViewHeight;
 	private int mScreenHeight;
 	private Activity mActivity;
 	private int[] mLocations = new int[2];
+	private int mViewWith;
 	private boolean mIsOnDismissAnim = false;
 	private OnItemClickListener mOnItemClickListener;
 
 	private ImageView mArrowDown, mArrowUp;
 
+	public static ListPopupWindow get(Activity activity) {
+		return new ListPopupWindow(activity);
+	}
+
 	public ListPopupWindow(final Activity activity) {
-		LayoutInflater inflater = LayoutInflater.from(activity);
 		mScreenHeight = activity.getResources().getDisplayMetrics().heightPixels;
 		final View contentView;
 		mActivity = activity;
 
-		contentView = inflater.inflate(R.layout.view_popup_list, null);
+		contentView = View.inflate(activity, R.layout.view_popup_list, null);
 		RecyclerView recyclerView = contentView.findViewById(R.id.recycler);
 		recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 		final WindowAdapter adapter = new WindowAdapter(activity, initData());
@@ -84,12 +84,9 @@ public class ListPopupWindow {
 		mArrowUp = contentView.findViewById(R.id.icon_popup_up);
 	}
 
-	public static ListPopupWindow get(Activity activity) {
-		return new ListPopupWindow(activity);
-	}
-
 	public PopupWindow show(final View view) {
 		view.getLocationInWindow(mLocations);
+		mViewWith = view.getMeasuredWidth();
 		setupAlpha(mActivity, 0.4f);
 
 		mPopupWindow.showAtLocation(view, Gravity.TOP, 0, 0);
@@ -99,18 +96,18 @@ public class ListPopupWindow {
 				mContentViewHeight = mPopupWindow.getContentView().getMeasuredHeight();
 				if (mLocations[1] > mScreenHeight / 2) {
 					// show up of view
-//                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimTop);
 					mPopupWindow.update(view, 0, -(mContentViewHeight + view.getHeight()),
 							mPopupWindow.getWidth(), mPopupWindow.getHeight());
+//                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimTop);
 
-					setupArrowIcon(true);
+					setupArrowIcon(view,true);
 				} else {
 					// show down of view
-//                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimBottom);
 					mPopupWindow.update(view, 0, 0, mPopupWindow.getWidth(),
 							mPopupWindow.getHeight());
+//                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimBottom);
 
-					setupArrowIcon(false);
+					setupArrowIcon(view, false);
 				}
 				AnimatorSet anim = showAnim(0.2f, 0.03f, 150);
 				anim.addListener(new AnimatorListenerAdapter() {
@@ -138,11 +135,19 @@ public class ListPopupWindow {
 		return mPopupWindow;
 	}
 
+	/**
+	 * 展示动画
+	 * @param start 开始的缩放系数
+	 * @param end 结束的缩放系数
+	 * @param duration 持续时间
+	 */
 	private AnimatorSet startAnim(float start, float end, int duration) {
 		setupPivotXY();
 
-		ObjectAnimator scaleX = ObjectAnimator.ofFloat(mPopupWindow.getContentView(), "scaleX", start, end);
-		ObjectAnimator scaleY = ObjectAnimator.ofFloat(mPopupWindow.getContentView(), "scaleY", start, end);
+		ObjectAnimator scaleX = ObjectAnimator.ofFloat(mPopupWindow.getContentView(),
+				"scaleX", start, end);
+		ObjectAnimator scaleY = ObjectAnimator.ofFloat(mPopupWindow.getContentView(),
+				"scaleY", start, end);
 
 		AnimatorSet anim = new AnimatorSet();
 		anim.play(scaleX).with(scaleY);
@@ -152,7 +157,7 @@ public class ListPopupWindow {
 	}
 
 	private void setupPivotXY() {
-		mPopupWindow.getContentView().setPivotX(mPopupWindow.getContentView().getMeasuredWidth());
+		mPopupWindow.getContentView().setPivotX(mLocations[0] + mViewWith / 2);
 		if (mLocations[1] > mScreenHeight / 2) {
 			mPopupWindow.getContentView().setPivotY(mPopupWindow.getContentView().getMeasuredHeight());
 		} else {
@@ -169,6 +174,7 @@ public class ListPopupWindow {
 		ObjectAnimator restoreY = ObjectAnimator.ofFloat(mPopupWindow.getContentView(), "scaleY", 1 + expand, 1f);
 
 		AnimatorSet anim = new AnimatorSet();
+		// 先扩大到超过菜单原先大小，在回复原本大小
 		anim.play(scaleX).with(scaleY);
 		anim.play(restoreX).with(restoreY).after(scaleX);
 		anim.setDuration(duration);
@@ -210,21 +216,22 @@ public class ListPopupWindow {
 		return mPopupWindow != null && mPopupWindow.isShowing();
 	}
 
-	public void setupArrowIcon(boolean isDownArrow) {
+	public void setupArrowIcon(View view, boolean isDownArrow) {
 		if (!isDownArrow) {
 			mArrowUp.setVisibility(View.VISIBLE);
 			mArrowDown.setVisibility(View.GONE);
-			setupMargin(mArrowUp);
+			setupMargin(view,mArrowUp);
 		} else {
 			mArrowUp.setVisibility(View.GONE);
 			mArrowDown.setVisibility(View.VISIBLE);
-			setupMargin(mArrowDown);
+			setupMargin(view, mArrowDown);
 		}
 	}
 
-	private void setupMargin(ImageView arrowIcon) {
+	private void setupMargin(View view, ImageView arrowIcon) {
 		LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) arrowIcon.getLayoutParams();
-		lp.setMargins(mLocations[0] + lp.width / 2 - OFFSET_X, 0, 0 ,0);
+		lp.setMargins(mLocations[0] - (view.getMeasuredWidth() - arrowIcon.getMeasuredWidth()) / 2 ,
+				0, 0 ,0);
 		arrowIcon.setLayoutParams(lp);
 	}
 
