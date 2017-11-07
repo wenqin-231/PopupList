@@ -10,7 +10,7 @@
 
 ####Demo
 
-![](https://github.com/wenqin-231/PopupList/blob/master/art/popup-window.gif?raw=true)
+![](https://github.com/wenqin-231/PopupList/blob/master/art/popup_window.gif?raw=true)
 
 ### More
 
