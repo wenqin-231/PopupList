@@ -97,14 +97,14 @@ public class ListPopupWindow {
 				if (mLocations[1] > mScreenHeight / 2) {
 					// show up of view
 					mPopupWindow.update(view, 0, -(mContentViewHeight + view.getHeight()),
-							mPopupWindow.getWidth(), mPopupWindow.getHeight());
+							mPopupWindow.getWidth(), mContentViewHeight);
 //                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimTop);
 
 					setupArrowIcon(view,true);
 				} else {
 					// show down of view
 					mPopupWindow.update(view, 0, 0, mPopupWindow.getWidth(),
-							mPopupWindow.getHeight());
+								mContentViewHeight);
 //                    mPopupWindow.setAnimationStyle(R.style.PopupWindowAnimBottom);
 
 					setupArrowIcon(view, false);
@@ -156,11 +156,16 @@ public class ListPopupWindow {
 		return anim;
 	}
 
+	/**
+	 * 设置缩放坐标
+	 */
 	private void setupPivotXY() {
 		mPopupWindow.getContentView().setPivotX(mLocations[0] + mViewWith / 2);
 		if (mLocations[1] > mScreenHeight / 2) {
+			// show up of view
 			mPopupWindow.getContentView().setPivotY(mPopupWindow.getContentView().getMeasuredHeight());
 		} else {
+			// show down of view
 			mPopupWindow.getContentView().setPivotY(0);
 		}
 	}
@@ -228,8 +233,12 @@ public class ListPopupWindow {
 		}
 	}
 
+	/**
+	 *  设置角标距离左右的距离
+	 */
 	private void setupMargin(View view, ImageView arrowIcon) {
 		LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) arrowIcon.getLayoutParams();
+		// 角标x坐标 - （被点击的宽度图标的宽度 - 角标的宽度）/ 2 --> 角标的尖点对准了被点击图标的中心位置
 		lp.setMargins(mLocations[0] - (view.getMeasuredWidth() - arrowIcon.getMeasuredWidth()) / 2 ,
 				0, 0 ,0);
 		arrowIcon.setLayoutParams(lp);
