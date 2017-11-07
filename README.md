@@ -1,6 +1,6 @@
 # PopupList
 
-####Feature
+###Feature
 
 * 完全由**PopupWindow**实现
 * 支持弹性打开菜单列表
@@ -8,7 +8,7 @@
 * 支持弹出背景变灰色，列表消失后列表背景恢复
 * 支持列表圆角（列表子项设置点击效果后圆角不受影响）
 
-####Demo
+###Demo
 
 ![](https://github.com/wenqin-231/PopupList/blob/master/art/popup_window.gif?raw=true)
 
